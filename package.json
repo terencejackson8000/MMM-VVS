@@ -21,6 +21,9 @@
     "url": "[GitHub url]/issues"
   },
   "homepage": "[GitHub url]#readme",
+  "dependencies": {
+    "fast-xml-parser": "^4.4.1"
+  },
   "devDependencies": {
     "@eslint/css": "^0.9.0",
     "@eslint/js": "^9.30.1",
