@@ -127,7 +127,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
     let beautfiedResults = [];
 
     for (const tripResult of tripResults) {
-      let leg = tripResult['trias:Trip']['trias:TripLeg'];
+      let trip = tripResult['trias:Trip'];
+      let duration = trip['trias:Duration'];
+      let durationMinutes = this.durationToMinutes(duration);
+      let leg = trip['trias:TripLeg'];
       let start = leg['trias:TimedLeg']['trias:LegBoard']['trias:StopPointName']['trias:Text'];
       let startTimetabledTime = leg['trias:TimedLeg']['trias:LegBoard']['trias:ServiceDeparture']['trias:TimetabledTime'];
       let startEstimatedTime = leg['trias:TimedLeg']['trias:LegBoard']['trias:ServiceDeparture']['trias:EstimatedTime'];
@@ -142,6 +145,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
         end: end,
         endTimetabledTime: endTimetabledTime,
         endEstimatedTime: endEstimatedTime,
+        durationMinutes: durationMinutes,
       })
     }
 
