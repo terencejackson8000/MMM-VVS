@@ -124,32 +124,27 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
     const parsed = this.parser.parse(tripResponseXml);
     const tripResults = this.findTripResults(parsed);
 
-    let beautfiedResults = [];
+    const beautfiedResults = tripResults.map((tripResult) => {
+      const trip = tripResult["trias:Trip"];
+      const durationMinutes = this.durationToMinutes(trip["trias:Duration"]);
+      const timedLeg = trip["trias:TripLeg"]["trias:TimedLeg"];
+      const legBoard = timedLeg["trias:LegBoard"];
+      const legAlight = timedLeg["trias:LegAlight"];
+      const boardDeparture = legBoard["trias:ServiceDeparture"];
+      const alightArrival = legAlight["trias:ServiceArrival"];
 
-    for (const tripResult of tripResults) {
-      let trip = tripResult['trias:Trip'];
-      let duration = trip['trias:Duration'];
-      let durationMinutes = this.durationToMinutes(duration);
-      let leg = trip['trias:TripLeg'];
-      let start = leg['trias:TimedLeg']['trias:LegBoard']['trias:StopPointName']['trias:Text'];
-      let startTimetabledTime = leg['trias:TimedLeg']['trias:LegBoard']['trias:ServiceDeparture']['trias:TimetabledTime'];
-      let startEstimatedTime = leg['trias:TimedLeg']['trias:LegBoard']['trias:ServiceDeparture']['trias:EstimatedTime'];
-      let end = leg['trias:TimedLeg']['trias:LegAlight']['trias:StopPointName']['trias:Text'];
-      let endTimetabledTime = leg['trias:TimedLeg']['trias:LegAlight']['trias:ServiceArrival']['trias:TimetabledTime'];
-      let endEstimatedTime = leg['trias:TimedLeg']['trias:LegAlight']['trias:ServiceArrival']['trias:EstimatedTime'];
+      return {
+        start: legBoard["trias:StopPointName"]["trias:Text"],
+        startTimetabledTime: boardDeparture["trias:TimetabledTime"],
+        startEstimatedTime: boardDeparture["trias:EstimatedTime"],
+        end: legAlight["trias:StopPointName"]["trias:Text"],
+        endTimetabledTime: alightArrival["trias:TimetabledTime"],
+        endEstimatedTime: alightArrival["trias:EstimatedTime"],
+        durationMinutes
+      };
+    });
 
-      beautfiedResults.push({
-        start: start,
-        startTimetabledTime: startTimetabledTime,
-        startEstimatedTime: startEstimatedTime,
-        end: end,
-        endTimetabledTime: endTimetabledTime,
-        endEstimatedTime: endEstimatedTime,
-        durationMinutes: durationMinutes,
-      })
-    }
-
-    Log.debug(`beautfiedResults ${JSON.stringify(beautfiedResults)}`)
+    Log.debug(`beautfiedResults ${JSON.stringify(beautfiedResults)}`);
 
     return beautfiedResults;
   },
