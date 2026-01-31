@@ -1,5 +1,5 @@
 const NodeHelper = require("node_helper");
-const request = require("request-promise-native");
+const fetch = require("node-fetch");
 const { XMLParser } = require("fast-xml-parser");
 const Log = require("logger");
 
@@ -79,33 +79,26 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
   },
 
   async postXml(endpoint, xmlBody) {
-    // Node 18+ has global fetch. MagicMirror on older Node might not.
-    // If fetch is not available, upgrade Node or add node-fetch.
-    if (typeof fetch !== "function") {
-      throw new Error("fetch is not available. Use Node 18+ or add node-fetch.");
-    }
     Log.debug(`postXml: ${endpoint} ${JSON.stringify(xmlBody)}`);
 
     try {
-      // request-promise-native handles the HTTP POST and resolves with full response.
-      const res = await request({
+      const res = await fetch(endpoint, {
         method: "POST",
-        uri: endpoint,
         headers: {
           "Content-Type": "text/xml; charset=UTF-8",
           "Accept": "text/xml"
         },
-        body: xmlBody,
-        resolveWithFullResponse: true
+        body: xmlBody
       });
+      const body = await res.text();
 
       //Log.debug(`postXml response ${res.statusCode} ${JSON.stringify(res.body)}`)
 
-      if (res.statusCode < 200 || res.statusCode >= 300) {
-        throw new Error(`HTTP ${res.statusCode}: ${res.body}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${body}`);
       }
 
-      return res.body;
+      return body;
     } catch (err) {
       // Surface transport/HTTP errors to the frontend.
       Log.error(`postXml failed ${err.message}`);
