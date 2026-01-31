@@ -19,7 +19,7 @@ In your terminal, go to the modules directory and clone the repository:
 
 ```bash
 cd ~/MagicMirror/modules
-git clone https://github.com/terencejackson8000/MMM-vvs.git
+git clone https://github.com/terencejackson8000/MMM-VVS.git
 npm install
 ```
 
